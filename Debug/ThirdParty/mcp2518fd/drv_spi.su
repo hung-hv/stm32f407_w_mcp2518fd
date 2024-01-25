@@ -1,0 +1,5 @@
+../ThirdParty/mcp2518fd/drv_spi.c:21:6:DRV_SPI_Initialize	32	static
+../ThirdParty/mcp2518fd/drv_spi.c:74:8:DRV_SPI_ChipSelectAssert	24	static
+../ThirdParty/mcp2518fd/drv_spi.c:102:8:DRV_SPI_TransferData	40	static
+../ThirdParty/mcp2518fd/drv_spi.c:124:6:mcp2518fd_transpond	72	static
+../ThirdParty/mcp2518fd/drv_spi.c:226:6:mcp2518fd_transmit	24	static
