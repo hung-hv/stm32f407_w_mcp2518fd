@@ -49,7 +49,7 @@
 uint8_t RX_Buffer[BUFFER_SIZE] = {0};
 uint8_t TX_Buffer[BUFFER_SIZE] = {1,2,3,4,5,6,7,8,9,10};
 uint8_t flag_send_frame = 0;
-uint8_t a=0;
+uint8_t a=69;
 
 /* USER CODE END PV */
 
