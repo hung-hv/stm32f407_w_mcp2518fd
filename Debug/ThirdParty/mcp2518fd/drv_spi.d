@@ -29,7 +29,8 @@ ThirdParty/mcp2518fd/drv_spi.o: ../ThirdParty/mcp2518fd/drv_spi.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Core/Inc/gpio.h ../ThirdParty/mcp2518fd/drv_canfdspi_api.h \
- ../ThirdParty/mcp2518fd/drv_canfdspi_defines.h
+ ../ThirdParty/mcp2518fd/drv_canfdspi_defines.h \
+ ../ThirdParty/mcp2518fd/drv_canfdspi_register.h
 ../ThirdParty/mcp2518fd/drv_spi.h:
 ../Core/Inc/spi.h:
 ../Core/Inc/main.h:
@@ -64,3 +65,4 @@ ThirdParty/mcp2518fd/drv_spi.o: ../ThirdParty/mcp2518fd/drv_spi.c \
 ../Core/Inc/gpio.h:
 ../ThirdParty/mcp2518fd/drv_canfdspi_api.h:
 ../ThirdParty/mcp2518fd/drv_canfdspi_defines.h:
+../ThirdParty/mcp2518fd/drv_canfdspi_register.h:

@@ -42,7 +42,7 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-#define BUFFER_SIZE 10
+#define BUFFER_SIZE 100
 
 /* USER CODE END EC */
 

@@ -47,9 +47,12 @@
 /* USER CODE BEGIN PV */
 //uint32_t counter_timer = 0;
 uint8_t RX_Buffer[BUFFER_SIZE] = {0};
+uint8_t *ptr_rx;
+uint8_t RX_data = 0;
 uint8_t TX_Buffer[BUFFER_SIZE] = {1,2,3,4,5,6,7,8,9,10};
-uint8_t flag_send_frame = 0;
-uint8_t a=969696;
+uint32_t RX_index = 0;
+uint8_t flag_send_frame = 1;
+//uint8_t a=969696;
 
 /* USER CODE END PV */
 
@@ -102,11 +105,16 @@ int main(void)
 //  HAL_SPI_Receive_IT(&hspi1, RX_Buffer, BUFFER_SIZE);
 //  HAL_SPI_Receive_IT(&hspi3, RX_Buffer, BUFFER_SIZE);
 //  HAL_SPI_Receive_IT(&hspi3, RX_Buffer, BUFFER_SIZE);
-  HAL_SPI_Transmit(&hspi2, TX_Buffer, sizeof(TX_Buffer), 1000);
-  HAL_SPI_Receive_IT(&hspi3, RX_Buffer, sizeof(RX_Buffer));
 
 
-  DRV_SPI_Initialize();
+//  HAL_SPI_Receive_IT(&hspi3, ptr_rx, 1);
+//  HAL_SPI_Receive_IT(&hspi3, &RX_data, sizeof(RX_data));
+//  HAL_SPI_Transmit(&hspi2, (uint8_t*)TX_Buffer, BUFFER_SIZE, 1000);
+  HAL_SPI_Receive_IT(&hspi3, (uint8_t*)RX_Buffer, sizeof(RX_Buffer));
+
+
+  CANFDSPI_Init();
+//  DRV_SPI_Initialize();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -121,13 +129,25 @@ int main(void)
 	  if (flag_send_frame == 1) {
 //		  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);
 //		  mcp2518fd_transpond();
+		  RX_index=0;
 		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_HIGH);
 //		  mcp2518fd_transmit();
 //		  mcp2518fd_transpond();
 //		  mcp2518fd_receive();
 		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
-		  HAL_SPI_Transmit(&hspi2,TX_Buffer, sizeof(TX_Buffer),1000);
+		  mcp2518fd_transmit();
+//		  RX_index=0;
+//		  for (uint16_t i = 0; i < BUFFER_SIZE; i++)
+//		      {
+//			  	  TX_Buffer[i] = rand() & 0xf;
+//		      }
+//		  HAL_SPI_Transmit(&hspi2, (uint8_t*)TX_Buffer, sizeof(TX_Buffer), 1000);
+//		  HAL_Delay(200);
+//		  HAL_SPI_Receive_IT(&hspi3, RX_Buffer, sizeof(RX_Buffer));
 		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
+//		  HAL_SPI_Receive_IT(&hspi3, ptr_rx, 1);
+//		  HAL_SPI_Receive_IT(&hspi3, &RX_data, sizeof(RX_data));
+//		  HAL_SPI_Receive_IT(&hspi3, (uint8_t*)RX_Buffer, BUFFER_SIZE);
 		  HAL_Delay(200);
 
 		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_LOW);

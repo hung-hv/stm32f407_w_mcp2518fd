@@ -774,6 +774,7 @@ int8_t DRV_CANFDSPI_TransmitChannelLoad(CANFDSPI_MODULE_ID index,
 
     // Check that it is a transmit buffer
     ciFifoCon.word = fifoReg[0];
+//    ciFifoCon.txBF.TxEnable = 1;
     if (!ciFifoCon.txBF.TxEnable) {
         return -2;
     }

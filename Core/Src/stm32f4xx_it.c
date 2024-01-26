@@ -44,7 +44,14 @@
 /* USER CODE BEGIN PV */
 uint64_t counter_timer = 0;
 uint32_t counter_btn = 0;
+uint32_t spi3_cnt = 0;
+uint16_t ext3_cnt = 0;
 extern uint8_t RX_Buffer[BUFFER_SIZE];
+extern uint8_t* ptr_rx;
+extern uint8_t RX_data;
+
+extern uint32_t RX_index;
+
 uint32_t ext5_cnt = 0;
 extern uint8_t flag_send_frame;
 
@@ -216,6 +223,8 @@ void EXTI3_IRQHandler(void)
   /* USER CODE END EXTI3_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
   /* USER CODE BEGIN EXTI3_IRQn 1 */
+  ext3_cnt++;
+  mcp2518fd_receive();
 
   /* USER CODE END EXTI3_IRQn 1 */
 }
@@ -299,7 +308,15 @@ void SPI3_IRQHandler(void)
   /* USER CODE END SPI3_IRQn 0 */
   HAL_SPI_IRQHandler(&hspi3);
   /* USER CODE BEGIN SPI3_IRQn 1 */
-  HAL_SPI_Receive_IT(&hspi3, RX_Buffer, sizeof(RX_Buffer));
+  spi3_cnt++;
+//  HAL_SPI_Receive_IT(&hspi3, &RX_data, sizeof(RX_data));
+//  HAL_SPI_Receive_IT(&hspi3, &RX_data, 1);
+  HAL_SPI_Receive_IT(&hspi3, (uint8_t*)RX_Buffer, sizeof(RX_Buffer));
+//  HAL_SPI_Receive_IT(&hspi3, ptr_rx, 1);
+//  HAL_SPI_Receive_IT(&hspi3, ptr_rx, 10);
+//  HAL_SPI_Receive(&hspi3, RX_Buffer, sizeof(RX_Buffer), 1000);
+//  RX_Buffer[RX_index] = *ptr_rx;
+//  RX_index++;
 
   /* USER CODE END SPI3_IRQn 1 */
 }

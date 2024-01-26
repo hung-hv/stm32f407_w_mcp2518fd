@@ -10,6 +10,8 @@
 #include "spi.h"//HAL��SPI��ʼ��
 #include "gpio.h"//HAL��GPIO��ʼ��
 #include "drv_canfdspi_api.h"
+#include "drv_canfdspi_register.h"
+#include "drv_canfdspi_defines.h"
 //========================================================//
 #ifdef	__cplusplus
 extern "C" {
