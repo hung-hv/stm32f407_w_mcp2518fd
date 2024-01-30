@@ -28,14 +28,7 @@ extern "C" {
 // Receive Channels
 #define APP_RX_FIFO 		CAN_FIFO_CH1
 
-// Define by calculate how many times of timer ISR to reach out 1ms
-#define TIMER_FACTOR 		1000
-
 //struct canfd_frame frame;
-
-const uint32_t TRANSMIT_TIMEOUT = 500*TIMER_FACTOR; //ms
-uint8_t transmitTimeout_Flag = 0;
-uint16_t transmitTimeout_Cnt = 0;
 
 //! SPI Initialization
 void CANFDSPI_Init(void);

@@ -51,7 +51,8 @@ uint8_t *ptr_rx;
 uint8_t RX_data = 0;
 uint8_t TX_Buffer[BUFFER_SIZE] = {1,2,3,4,5,6,7,8,9,10};
 uint32_t RX_index = 0;
-uint8_t flag_send_frame = 1;
+uint8_t flag_send_frame = 0;
+uint8_t flag_receive_frame = 0;
 //uint8_t a=969696;
 
 /* USER CODE END PV */
@@ -59,6 +60,7 @@ uint8_t flag_send_frame = 1;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+void blink_led(uint8_t times);
 
 /* USER CODE END PFP */
 
@@ -115,6 +117,7 @@ int main(void)
 
   CANFDSPI_Init();
 //  DRV_SPI_Initialize();
+//  DRV_SPI_Initialize();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -124,35 +127,49 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);
-//	  HAL_Delay(100);
 	  if (flag_send_frame == 1) {
-//		  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);
-//		  mcp2518fd_transpond();
-		  RX_index=0;
 		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_HIGH);
-//		  mcp2518fd_transmit();
-//		  mcp2518fd_transpond();
-//		  mcp2518fd_receive();
-		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
 		  mcp2518fd_transmit();
-//		  RX_index=0;
-//		  for (uint16_t i = 0; i < BUFFER_SIZE; i++)
-//		      {
-//			  	  TX_Buffer[i] = rand() & 0xf;
-//		      }
-//		  HAL_SPI_Transmit(&hspi2, (uint8_t*)TX_Buffer, sizeof(TX_Buffer), 1000);
-//		  HAL_Delay(200);
-//		  HAL_SPI_Receive_IT(&hspi3, RX_Buffer, sizeof(RX_Buffer));
-		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
-//		  HAL_SPI_Receive_IT(&hspi3, ptr_rx, 1);
-//		  HAL_SPI_Receive_IT(&hspi3, &RX_data, sizeof(RX_data));
-//		  HAL_SPI_Receive_IT(&hspi3, (uint8_t*)RX_Buffer, BUFFER_SIZE);
-		  HAL_Delay(200);
-
+		  //debounce
+		  HAL_Delay(100);
 		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_LOW);
 		  flag_send_frame = 0;
 	  }
+	  if (flag_receive_frame == 1) {
+		  mcp2518fd_receive();
+		  blink_led(2);
+		  flag_receive_frame = 0;
+	  }
+	  //	  if (flag_send_frame == 1) {
+	  ////		  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);
+	  ////		  mcp2518fd_transpond();
+	  //		  RX_index=0;
+	  //		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_HIGH);
+	  ////		  mcp2518fd_transmit();
+	  ////		  mcp2518fd_transpond();
+	  ////		  mcp2518fd_receive();
+	  ////		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
+	  //		  mcp2518fd_transmit();
+	  ////		  HAL_Delay(100);
+	  ////		  CANFDSPI_Test();
+	  ////		  mcp2518fd_receive();
+	  ////		  RX_index=0;
+	  ////		  for (uint16_t i = 0; i < BUFFER_SIZE; i++)
+	  ////		      {
+	  ////			  	  TX_Buffer[i] = rand() & 0xf;
+	  ////		      }
+	  ////		  HAL_SPI_Transmit(&hspi2, (uint8_t*)TX_Buffer, sizeof(TX_Buffer), 1000);
+	  ////		  HAL_Delay(200);
+	  ////		  HAL_SPI_Receive_IT(&hspi3, RX_Buffer, sizeof(RX_Buffer));
+	  ////		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
+	  ////		  HAL_SPI_Receive_IT(&hspi3, ptr_rx, 1);
+	  ////		  HAL_SPI_Receive_IT(&hspi3, &RX_data, sizeof(RX_data));
+	  ////		  HAL_SPI_Receive_IT(&hspi3, (uint8_t*)RX_Buffer, BUFFER_SIZE);
+	  //		  HAL_Delay(100);
+	  //
+	  //		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_LOW);
+	  //		  flag_send_frame = 0;
+	  //	  }
   }
   /* USER CODE END 3 */
 }
@@ -205,67 +222,19 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+void blink_led(uint8_t times) {
+	for (int i = 0; i <= times; i++) {
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_HIGH);
+		HAL_Delay(50);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_LOW);
+		HAL_Delay(50);
+	}
+
+}
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-//   Check which version of the timer triggered this callback and toggle LED
-//  if (htim == &htim14)
-//  {
-//	  if(counter_timer >= 1000) {
-//		  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);
-//		  counter_timer = 0;
-//	  }
-//	  else {
-//		  counter_timer++;
-//	  }
-//  }
-//
-////	  if (flag_read_pin == 0) { //one time only
-////		  if (HAL_GPIO_ReadPin (GPIOD, GPIO_PIN_11) == 0) {
-////			  flag_read_pin = 1;
-////		  }
-////	  }
-//
-//	  if (flag_read_pin == 1) {
-////		  if (raw_index < 38) {
-////			  raw_data[raw_index] = HAL_GPIO_ReadPin (GPIOD, GPIO_PIN_11);
-////			  raw_index ++;
-////		  }
-////		  read_pin_counter = 0;
-//		  if (read_pin_counter >= 52) {
-//			  if (raw_index < 38) {
-//				  raw_data[raw_index] = HAL_GPIO_ReadPin (GPIOD, GPIO_PIN_11);
-//				  raw_index ++;
-//			  }
-//			  read_pin_counter = 0;
-//		  } else {
-//			  read_pin_counter++;
-//		  }
-//
-//
-//		  if(HAL_GPIO_ReadPin (GPIOD, GPIO_PIN_11) == GPIO_PIN_RESET) { //start trigger dertermine LOGIC
-//			  if (logic_counter == 4) {
-//				  sample_counter++; //max = 13
-//				  logic_counter = 0; //max = 4 ->reset
-//				  // check logic
-//				  if(HAL_GPIO_ReadPin (GPIOD, GPIO_PIN_11) == GPIO_PIN_RESET) {
-//					  dertimine_logic++; //adding 1 each time sampling
-//				  } else {
-//					  //do nothing
-//				  }
-//				  if (dertimine_logic > LOGIC_CONFIRMED) {
-//					  bit_array[bit_index] = 0;
-//				  } else {
-//					  bit_array[bit_index] = 1;
-//				  }
-//				  // end check logic
-//			  }
-//			  logic_counter++;
-//		  } else {
-//			  //do nothing
-//		  }
-//
-//	  }
-//  }
+
 }
 /* USER CODE END 4 */
 

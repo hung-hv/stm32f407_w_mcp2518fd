@@ -54,6 +54,7 @@ extern uint32_t RX_index;
 
 uint32_t ext5_cnt = 0;
 extern uint8_t flag_send_frame;
+extern uint8_t flag_receive_frame;
 
 /* USER CODE END PV */
 
@@ -69,6 +70,7 @@ extern uint8_t flag_send_frame;
 
 /* External variables --------------------------------------------------------*/
 extern SPI_HandleTypeDef hspi1;
+extern SPI_HandleTypeDef hspi2;
 extern SPI_HandleTypeDef hspi3;
 extern TIM_HandleTypeDef htim14;
 /* USER CODE BEGIN EV */
@@ -223,8 +225,9 @@ void EXTI3_IRQHandler(void)
   /* USER CODE END EXTI3_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
   /* USER CODE BEGIN EXTI3_IRQn 1 */
+  flag_receive_frame = 1;
   ext3_cnt++;
-  mcp2518fd_receive();
+//  mcp2518fd_receive();
 
   /* USER CODE END EXTI3_IRQn 1 */
 }
@@ -239,7 +242,7 @@ void EXTI4_IRQHandler(void)
   /* USER CODE END EXTI4_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
   /* USER CODE BEGIN EXTI4_IRQn 1 */
-  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);
+//  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);
   counter_btn++;
   flag_send_frame = 1;
 
@@ -272,9 +275,23 @@ void SPI1_IRQHandler(void)
   /* USER CODE END SPI1_IRQn 0 */
   HAL_SPI_IRQHandler(&hspi1);
   /* USER CODE BEGIN SPI1_IRQn 1 */
-  HAL_SPI_Receive_IT(&hspi1, RX_Buffer, BUFFER_SIZE);
+//  HAL_SPI_Receive_IT(&hspi1, RX_Buffer, BUFFER_SIZE);
 
   /* USER CODE END SPI1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles SPI2 global interrupt.
+  */
+void SPI2_IRQHandler(void)
+{
+  /* USER CODE BEGIN SPI2_IRQn 0 */
+
+  /* USER CODE END SPI2_IRQn 0 */
+  HAL_SPI_IRQHandler(&hspi2);
+  /* USER CODE BEGIN SPI2_IRQn 1 */
+
+  /* USER CODE END SPI2_IRQn 1 */
 }
 
 /**
@@ -287,13 +304,24 @@ void TIM8_TRG_COM_TIM14_IRQHandler(void)
   /* USER CODE END TIM8_TRG_COM_TIM14_IRQn 0 */
   HAL_TIM_IRQHandler(&htim14);
   /* USER CODE BEGIN TIM8_TRG_COM_TIM14_IRQn 1 */
-	if(counter_timer >= 100000) {
+	if(counter_timer >= 1000000) {
 	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);
 	  counter_timer = 0;
 	}
 	else {
 	  counter_timer++;
 	}
+	if (transmitTimeout_Flag == 0) {
+		if (transmitTimeout_Cnt >= TRANSMIT_TIMEOUT) {
+			//reset counter
+			transmitTimeout_Cnt = 0;
+			//timeout!
+			transmitTimeout_Flag = 1;
+		} else {
+			transmitTimeout_Cnt++;
+		}
+	}
+
 
   /* USER CODE END TIM8_TRG_COM_TIM14_IRQn 1 */
 }

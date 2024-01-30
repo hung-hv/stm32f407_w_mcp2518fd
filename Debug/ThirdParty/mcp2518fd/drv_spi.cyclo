@@ -1,7 +1,6 @@
-../ThirdParty/mcp2518fd/drv_spi.c:41:6:CANFDSPI_Init	1
-../ThirdParty/mcp2518fd/drv_spi.c:127:6:DRV_SPI_Initialize	1
-../ThirdParty/mcp2518fd/drv_spi.c:180:8:DRV_SPI_ChipSelectAssert	5
-../ThirdParty/mcp2518fd/drv_spi.c:214:8:DRV_SPI_TransferData	3
-../ThirdParty/mcp2518fd/drv_spi.c:236:6:mcp2518fd_transpond	7
-../ThirdParty/mcp2518fd/drv_spi.c:338:6:mcp2518fd_transmit	3
-../ThirdParty/mcp2518fd/drv_spi.c:373:6:mcp2518fd_receive	2
+../ThirdParty/mcp2518fd/drv_spi.c:45:6:CANFDSPI_Init	1
+../ThirdParty/mcp2518fd/drv_spi.c:146:8:DRV_SPI_ChipSelectAssert	5
+../ThirdParty/mcp2518fd/drv_spi.c:183:8:DRV_SPI_TransferData	4
+../ThirdParty/mcp2518fd/drv_spi.c:212:6:mcp2518fd_transpond	7
+../ThirdParty/mcp2518fd/drv_spi.c:314:6:mcp2518fd_transmit	4
+../ThirdParty/mcp2518fd/drv_spi.c:352:6:mcp2518fd_receive	1

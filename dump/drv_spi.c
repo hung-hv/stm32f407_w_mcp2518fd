@@ -42,9 +42,73 @@ extern uint32_t ext5_cnt;
 
 bool ramInitialized = false;
 
-void CANFDSPI_Init(void)
+void CANFDSPI_Init( void )
 {
-    /**************************************************************************/
+
+//	// Reset device
+//	DRV_CANFDSPI_Reset(DRV_CANFDSPI_INDEX_0);
+//
+//	// Enable ECC and initialize RAM
+//	DRV_CANFDSPI_EccEnable(DRV_CANFDSPI_INDEX_0);
+//
+//	DRV_CANFDSPI_RamInit(DRV_CANFDSPI_INDEX_0, 0xff);
+//
+//	// Configure device
+//	DRV_CANFDSPI_ConfigureObjectReset(&config);
+//	config.IsoCrcEnable = 1;
+//	config.StoreInTEF = 0;
+//	config.TXQEnable = 0;
+//
+//	DRV_CANFDSPI_Configure(DRV_CANFDSPI_INDEX_0, &config);
+//
+//	// Setup TX FIFO
+//	DRV_CANFDSPI_TransmitChannelConfigureObjectReset(&txConfig);
+//	txConfig.FifoSize = 7;
+//	txConfig.PayLoadSize = CAN_PLSIZE_64;
+//	txConfig.TxPriority = 1;
+//
+//	DRV_CANFDSPI_TransmitChannelConfigure(DRV_CANFDSPI_INDEX_0, APP_TX_FIFO, &txConfig);
+//
+//	// Setup RX FIFO
+//	DRV_CANFDSPI_ReceiveChannelConfigureObjectReset(&rxConfig);
+//	rxConfig.FifoSize = 15;
+//	rxConfig.PayLoadSize = CAN_PLSIZE_64;
+//
+//	DRV_CANFDSPI_ReceiveChannelConfigure(DRV_CANFDSPI_INDEX_0, APP_RX_FIFO, &rxConfig);
+//
+//	// Setup RX Filter
+//	fObj.word = 0;
+//	fObj.bF.SID = 0x300;
+//	fObj.bF.EXIDE = 0;
+//	fObj.bF.EID = 0x00;
+//
+//	DRV_CANFDSPI_FilterObjectConfigure(DRV_CANFDSPI_INDEX_0, CAN_FILTER0, &fObj.bF);
+//
+//	// Setup RX Mask
+//	mObj.word = 0;
+//	mObj.bF.MSID = 0x7F8;
+//	mObj.bF.MIDE = 1; // Only allow standard IDs
+//	mObj.bF.MEID = 0x0;
+//	DRV_CANFDSPI_FilterMaskConfigure(DRV_CANFDSPI_INDEX_0, CAN_FILTER0, &mObj.bF);
+//
+//	// Link FIFO and Filter
+//	DRV_CANFDSPI_FilterToFifoLink(DRV_CANFDSPI_INDEX_0, CAN_FILTER0, APP_RX_FIFO, true);
+//
+//	// Setup Bit Time
+//	DRV_CANFDSPI_BitTimeConfigure(DRV_CANFDSPI_INDEX_0, CAN_500K_2M, CAN_SSP_MODE_AUTO, CAN_SYSCLK_40M);
+//
+//	// Setup Transmit and Receive Interrupts
+//	DRV_CANFDSPI_GpioModeConfigure(DRV_CANFDSPI_INDEX_0, GPIO_MODE_INT, GPIO_MODE_INT);
+//	DRV_CANFDSPI_TransmitChannelEventEnable(DRV_CANFDSPI_INDEX_0, APP_TX_FIFO, CAN_TX_FIFO_NOT_FULL_EVENT);
+//	DRV_CANFDSPI_ReceiveChannelEventEnable(DRV_CANFDSPI_INDEX_0, APP_RX_FIFO, CAN_RX_FIFO_NOT_EMPTY_EVENT);
+//	DRV_CANFDSPI_ModuleEventEnable(DRV_CANFDSPI_INDEX_0, CAN_TX_EVENT | CAN_RX_EVENT);
+//
+//	// Select Normal Mode
+//	//DRV_CANFDSPI_OperationModeSelect(CAN_NORMAL_MODE);
+//
+//	DRV_CANFDSPI_OperationModeSelect(DRV_CANFDSPI_INDEX_0, CAN_EXTERNAL_LOOPBACK_MODE);
+//
+//    /**************************************************************************/
     // MCP2518FD 1#
     DRV_CANFDSPI_Reset(DRV_CANFDSPI_INDEX_0);
 
@@ -72,17 +136,17 @@ void CANFDSPI_Init(void)
     // Setup Bit Time
     DRV_CANFDSPI_BitTimeConfigure(DRV_CANFDSPI_INDEX_0, CAN_500K_5M, CAN_SSP_MODE_AUTO, CAN_SYSCLK_40M);
 //    DRV_CANFDSPI_BitTimeConfigure(DRV_CANFDSPI_INDEX_0, CAN_125K_500K, CAN_SSP_MODE_AUTO, CAN_SYSCLK_40M);
-
-    /*only for interrupts trigger (INT pin)*/
 	// Setup Transmit and Receive Interrupts
 //	DRV_CANFDSPI_GpioModeConfigure(DRV_CANFDSPI_INDEX_0, GPIO_MODE_INT, GPIO_MODE_INT);
 //	DRV_CANFDSPI_TransmitChannelEventEnable(DRV_CANFDSPI_INDEX_0, APP_TX_FIFO, CAN_TX_FIFO_NOT_FULL_EVENT);
 //	DRV_CANFDSPI_ReceiveChannelEventEnable(DRV_CANFDSPI_INDEX_0, APP_RX_FIFO, CAN_RX_FIFO_NOT_EMPTY_EVENT);
 //	DRV_CANFDSPI_ModuleEventEnable(DRV_CANFDSPI_INDEX_0, CAN_TX_EVENT | CAN_RX_EVENT);
-    /***************************************/
+
     // Select Normal Mode
     DRV_CANFDSPI_OperationModeSelect(DRV_CANFDSPI_INDEX_0, CAN_NORMAL_MODE);
-    /**************************************************************************/
+//
+////    STBY_0_Clear();
+//    /**************************************************************************/
     // MCP2518FD 2#
     DRV_CANFDSPI_Reset(DRV_CANFDSPI_INDEX_1);
 
@@ -135,13 +199,126 @@ void CANFDSPI_Init(void)
     // Select Normal Mode
     DRV_CANFDSPI_OperationModeSelect(DRV_CANFDSPI_INDEX_1, CAN_NORMAL_MODE);
 
+//    STBY_1_Clear();
+
+
+    /*************************************************************************************************/
+//    	// Reset device
+//    	DRV_CANFDSPI_Reset(DRV_CANFDSPI_INDEX_1);
+//
+//    	// Enable ECC and initialize RAM
+//    	DRV_CANFDSPI_EccEnable(DRV_CANFDSPI_INDEX_1);
+//
+//    	DRV_CANFDSPI_RamInit(DRV_CANFDSPI_INDEX_1, 0xff);
+//
+//    	// Configure device
+//    	DRV_CANFDSPI_ConfigureObjectReset(&config);
+//    	config.IsoCrcEnable = 1;
+//    	config.StoreInTEF = 0;
+//    	config.TXQEnable = 0;
+//
+//    	DRV_CANFDSPI_Configure(DRV_CANFDSPI_INDEX_1, &config);
+//
+//    	// Setup TX FIFO
+//    	DRV_CANFDSPI_TransmitChannelConfigureObjectReset(&txConfig);
+//    	txConfig.FifoSize = 7;
+//    	txConfig.PayLoadSize = CAN_PLSIZE_64;
+//    	txConfig.TxPriority = 1;
+//
+//    	DRV_CANFDSPI_TransmitChannelConfigure(DRV_CANFDSPI_INDEX_1, APP_TX_FIFO, &txConfig);
+//
+//    	// Setup RX FIFO
+//    	DRV_CANFDSPI_ReceiveChannelConfigureObjectReset(&rxConfig);
+//    	rxConfig.FifoSize = 15;
+//    	rxConfig.PayLoadSize = CAN_PLSIZE_64;
+//
+//    	DRV_CANFDSPI_ReceiveChannelConfigure(DRV_CANFDSPI_INDEX_1, APP_RX_FIFO, &rxConfig);
+//
+//    	// Setup RX Filter
+//    	fObj.word = 0;
+//    	fObj.bF.SID = 0x300;
+//    	fObj.bF.EXIDE = 0;
+//    	fObj.bF.EID = 0x00;
+//
+//    	DRV_CANFDSPI_FilterObjectConfigure(DRV_CANFDSPI_INDEX_1, CAN_FILTER0, &fObj.bF);
+//
+//    	// Setup RX Mask
+//    	mObj.word = 0;
+//    	mObj.bF.MSID = 0x7F8;
+//    	mObj.bF.MIDE = 1; // Only allow standard IDs
+//    	mObj.bF.MEID = 0x0;
+//    	DRV_CANFDSPI_FilterMaskConfigure(DRV_CANFDSPI_INDEX_1, CAN_FILTER0, &mObj.bF);
+//
+//    	// Link FIFO and Filter
+//    	DRV_CANFDSPI_FilterToFifoLink(DRV_CANFDSPI_INDEX_1, CAN_FILTER0, APP_RX_FIFO, true);
+//
+//    	// Setup Bit Time
+////    	DRV_CANFDSPI_BitTimeConfigure(DRV_CANFDSPI_INDEX_1, CAN_500K_2M, CAN_SSP_MODE_AUTO, CAN_SYSCLK_40M);
+//    	DRV_CANFDSPI_BitTimeConfigure(DRV_CANFDSPI_INDEX_1, CAN_125K_500K, CAN_SSP_MODE_AUTO, CAN_SYSCLK_40M);
+//    	// Setup Transmit and Receive Interrupts
+////    	DRV_CANFDSPI_GpioModeConfigure(DRV_CANFDSPI_INDEX_1, GPIO_MODE_INT, GPIO_MODE_INT);
+////    	DRV_CANFDSPI_TransmitChannelEventEnable(DRV_CANFDSPI_INDEX_1, APP_TX_FIFO, CAN_TX_FIFO_NOT_FULL_EVENT);
+////    	DRV_CANFDSPI_ReceiveChannelEventEnable(DRV_CANFDSPI_INDEX_1, APP_RX_FIFO, CAN_RX_FIFO_NOT_EMPTY_EVENT);
+////    	DRV_CANFDSPI_ModuleEventEnable(DRV_CANFDSPI_INDEX_1, CAN_TX_EVENT | CAN_RX_EVENT);
+//
+//    	// Select Normal Mode
+//    	//DRV_CANFDSPI_OperationModeSelect(CAN_NORMAL_MODE);
+//
+//    	DRV_CANFDSPI_OperationModeSelect(DRV_CANFDSPI_INDEX_1, CAN_EXTERNAL_LOOPBACK_MODE);
+}
+
+void DRV_SPI_Initialize(void)
+{
+    DRV_CANFDSPI_Reset(DRV_CANFDSPI_INDEX_0);
+
+    CAN_OSC_CTRL oscCtrl;
+    DRV_CANFDSPI_OscillatorControlObjectReset(&oscCtrl);
+    oscCtrl.ClkOutDivide = OSC_CLKO_DIV10;
+    DRV_CANFDSPI_OscillatorControlSet(DRV_CANFDSPI_INDEX_0, oscCtrl);
+
+    DRV_CANFDSPI_GpioModeConfigure(DRV_CANFDSPI_INDEX_0, GPIO_MODE_INT, GPIO_MODE_INT);
+    CAN_CONFIG config;
+    DRV_CANFDSPI_ConfigureObjectReset(&config);
+    config.IsoCrcEnable = 1;
+    config.StoreInTEF = 1;
+    config.TXQEnable = 1;
+    DRV_CANFDSPI_Configure(DRV_CANFDSPI_INDEX_0, &config);
+    DRV_CANFDSPI_BitTimeConfigure(DRV_CANFDSPI_INDEX_0, CAN_500K_2M, CAN_SSP_MODE_AUTO, CAN_SYSCLK_40M);
+    CAN_TEF_CONFIG tefConfig;
+    tefConfig.FifoSize = 11;
+    tefConfig.TimeStampEnable = 1;
+    DRV_CANFDSPI_TefConfigure(DRV_CANFDSPI_INDEX_0, &tefConfig);
+    CAN_TX_QUEUE_CONFIG txqConfig;
+    DRV_CANFDSPI_TransmitQueueConfigureObjectReset(&txqConfig);
+    txqConfig.TxPriority = 1;
+    txqConfig.FifoSize = 7;
+    txqConfig.PayLoadSize = CAN_PLSIZE_32;
+    DRV_CANFDSPI_TransmitQueueConfigure(DRV_CANFDSPI_INDEX_0, &txqConfig);
+
+    CAN_TX_FIFO_CONFIG txfConfig;
+    DRV_CANFDSPI_TransmitChannelConfigureObjectReset(&txfConfig);
+    txfConfig.FifoSize = 4;
+    txfConfig.PayLoadSize = CAN_PLSIZE_64;
+    txfConfig.TxPriority = 0;
+    DRV_CANFDSPI_TransmitChannelConfigure(DRV_CANFDSPI_INDEX_0, CAN_FIFO_CH1, &txfConfig);
+
+    CAN_RX_FIFO_CONFIG rxfConfig;
+    rxfConfig.FifoSize = 15;
+    rxfConfig.PayLoadSize = CAN_PLSIZE_64;
+    rxfConfig.RxTimeStampEnable = 1;
+    DRV_CANFDSPI_ReceiveChannelConfigure(DRV_CANFDSPI_INDEX_0, CAN_FIFO_CH2, &rxfConfig);
+
+    DRV_CANFDSPI_EccEnable(DRV_CANFDSPI_INDEX_0);
+    DRV_CANFDSPI_RamInit(DRV_CANFDSPI_INDEX_0, 0xff);
+    DRV_CANFDSPI_OperationModeSelect(DRV_CANFDSPI_INDEX_0, CAN_NORMAL_MODE);
+
 }
 
 /**
-  * @brief  select ENABLE pin
-  * @param  spiSlaveDeviceIndex: DRV_CANFDSPI_INDEX_0 or DRV_CANFDSPI_INDEX_1
-  * @param  assert: true-enable, false-disable
-  * @retval -1 if flase
+  * @brief  SPIƬѡ�źſ���
+  * @param  spiSlaveDeviceIndex: ��·SPIѡ��Ҫ����оƬ�ͺ����жϿɳ���·
+  * @param  assert: �Ƿ�ѡ��ģ�顣true�������ͣ�false��������
+  * @retval -1����Ƭѡʧ�ܣ�0����Ƭѡ���
   */
 int8_t DRV_SPI_ChipSelectAssert(uint8_t spiSlaveDeviceIndex, bool assert)
 {
@@ -170,12 +347,12 @@ int8_t DRV_SPI_ChipSelectAssert(uint8_t spiSlaveDeviceIndex, bool assert)
 
 
 /**
-  * @brief  Hardware abstract layer for spi transmit between STM32 and mcp2518fd
-  * @param  spiSlaveDeviceIndex: choosing MCP chip
-  * @param  SpiTxData: Tx buffer
-  * @param  SpiRxData: Rx buffer
-  * @param  spiTransferSize: size of 1 element
-  * @retval -1 if false
+  * @brief  MCP2517FDģ�����ݷ��ͽ��պ���
+  * @param  spiSlaveDeviceIndex: ��·SPIѡ��
+  * @param  SpiTxData: ���͵�����
+  * @param  SpiRxData: ���յ�����
+  * @param  spiTransferSize: �������ݵĳ���
+  * @retval Ƭѡ�ź�״̬  -1����Ƭѡʧ�ܣ�0����Ƭѡ�ɹ�
   */
 uint8_t test_0 = 0;
 uint8_t test_1 = 0;
@@ -308,9 +485,9 @@ void mcp2518fd_transpond(void)
 }
 
 CAN_TX_MSGOBJ txObj;
+uint8_t flag_transmit = 0;
 //CAN_TX_MSGOBJ txObj;
 uint8_t txd[MAX_DATA_BYTES];
-
 void mcp2518fd_transmit(void) {
 //	uint8_t attempts = 50;
 	uint8_t n;
@@ -330,7 +507,7 @@ void mcp2518fd_transmit(void) {
 
     n = DRV_CANFDSPI_DlcToDataBytes((CAN_DLC) txObj.bF.ctrl.DLC);
     //create random data with size of buffer = size of DLC
-    for (i = 0; i < n; i++)
+    for (i = 0; i < 2; i++)
     {
         txd[i] = rand() & 0xff;
     }
@@ -338,26 +515,93 @@ void mcp2518fd_transmit(void) {
 //    while(ext5_cnt == 0);
 
     DRV_CANFDSPI_TransmitChannelEventGet(DRV_CANFDSPI_INDEX_0, APP_TX_FIFO, &txFlags);
+//
+    while (!(txFlags & CAN_TX_FIFO_NOT_FULL_EVENT)); //WAIT
 
-    //waiting for checking transmit buffer with timeout = TRANSMIT_TIMEOUT
-    transmitTimeout_Flag = 0;
-    while ( (!(txFlags & CAN_TX_FIFO_NOT_FULL_EVENT)) && (transmitTimeout_Flag == 0) ) {
-    }
-
-
+//    if (txFlags & CAN_TX_FIFO_NOT_FULL_EVENT) {
 	DRV_CANFDSPI_TransmitChannelLoad(DRV_CANFDSPI_INDEX_0, APP_TX_FIFO, &txObj, txd, n, flush);
-//	printf("\r\n Transmit message's ID = %04x, and txd[0] = %02x", txObj.bF.id.SID, txd[0]);
+	printf("\r\n Transmit message's ID = %04x, and txd[0] = %02x", txObj.bF.id.SID, txd[0]);
+	flag_transmit = 1;
+	ext5_cnt = 0;
+//    }
 }
 
 void mcp2518fd_receive(void) {
 //	DRV_CANFDSPI_2_ReceiveChannelEventGet(DRV_CANFDSPI_INDEX_0, APP_RX_FIFO, &rxFlags);
 //	if (rxFlags & CAN_RX_FIFO_NOT_EMPTY_EVENT) {
 		// Get message
-//	DRV_CANFDSPI_ReceiveChannelEventGet(DRV_CANFDSPI_INDEX_1, APP_RX_FIFO, &rxFlags);
-//	if (rxFlags & CAN_RX_FIFO_NOT_EMPTY_EVENT) {
+	DRV_CANFDSPI_ReceiveChannelEventGet(DRV_CANFDSPI_INDEX_1, APP_RX_FIFO, &rxFlags);
+	if (rxFlags & CAN_RX_FIFO_NOT_EMPTY_EVENT) {
 		DRV_CANFDSPI_ReceiveMessageGet(DRV_CANFDSPI_INDEX_1, APP_RX_FIFO, &rxObj, rxd, MAX_DATA_BYTES);
 		printf("\r\n Receive message's ID = %04x, and rxd[0] = %02x", txObj.bF.id.SID, rxd[0]);
-//	}
+	}
 //	rxFlags = CAN_RX_FIFO_NO_EVENT;
 //	}
+}
+
+
+void CANFDSPI_Test( void )
+{
+    uint8_t attempts = 50;
+    uint8_t n;
+    int16_t i;
+    static uint16_t messageID_add = 0;
+
+    /**********************Prepare Data****************************************/
+//    Nop();
+//    Nop();
+    txObj.bF.id.SID = 0x300 + ((messageID_add++) & 0xF);
+
+    txObj.bF.ctrl.DLC = CAN_DLC_64;
+    txObj.bF.ctrl.IDE = 0;
+    txObj.bF.ctrl.BRS = 1;
+    txObj.bF.ctrl.FDF = 1;
+
+    n = DRV_CANFDSPI_DlcToDataBytes((CAN_DLC) txObj.bF.ctrl.DLC);
+
+    for (i = 0; i < n; i++)
+    {
+        txd[i] = rand() & 0xff;
+    }
+
+    /**********************transmit********************************************/
+    // Check if FIFO is not full
+    do {
+#ifdef APP_USE_TX_INT
+
+#else
+        DRV_CANFDSPI_TransmitChannelEventGet(DRV_CANFDSPI_INDEX_0, APP_TX_FIFO, &txFlags);
+#endif
+//        if (attempts == 0) {
+//            Nop();
+//            Nop();
+//            DRV_CANFDSPI_ErrorCountStateGet(&tec, &rec, &errorFlags);
+//            return;
+//        }
+//        attempts--;
+    }
+#ifdef APP_USE_TX_INT
+    while (nINT0_Get());
+#else
+    while (!(txFlags & CAN_TX_FIFO_NOT_FULL_EVENT));
+#endif
+
+    DRV_CANFDSPI_TransmitChannelLoad(DRV_CANFDSPI_INDEX_0, APP_TX_FIFO, &txObj, txd, n, true);
+    printf("\r\n Transmit message's ID = %04x, and txd[0] = %02x", txObj.bF.id.SID, txd[0]);
+
+//    SYSTICK_DelayMs (10);
+    /**********************receive*********************************************/
+    // Check if FIFO is not empty
+#ifdef APP_USE_RX_INT
+    if (!nINT1_Get()) {
+#else
+    DRV_CANFDSPI_ReceiveChannelEventGet(DRV_CANFDSPI_INDEX_1, APP_RX_FIFO, &rxFlags);
+    if (rxFlags & CAN_RX_FIFO_NOT_EMPTY_EVENT) {
+#endif
+        // Get message
+        DRV_CANFDSPI_ReceiveMessageGet(DRV_CANFDSPI_INDEX_1, APP_RX_FIFO, &rxObj, rxd, MAX_DATA_BYTES);
+
+        printf("\r\n Receive message's ID = %04x, and rxd[0] = %02x", txObj.bF.id.SID, rxd[0]);
+    }
+
 }
