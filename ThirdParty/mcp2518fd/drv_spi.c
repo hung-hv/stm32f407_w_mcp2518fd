@@ -42,6 +42,10 @@ extern uint32_t ext5_cnt;
 
 bool ramInitialized = false;
 
+const uint32_t TRANSMIT_TIMEOUT = 500*TIMER_FACTOR; //ms
+uint8_t transmitTimeout_Flag = 1;
+uint32_t transmitTimeout_Cnt = 0;
+
 void CANFDSPI_Init(void)
 {
     /**************************************************************************/
@@ -209,103 +213,103 @@ int8_t DRV_SPI_TransferData(uint8_t spiSlaveDeviceIndex, uint8_t *SpiTxData, uin
 } 
 
 struct canfd_frame frame;
-void mcp2518fd_transpond(void)
-{
-		CAN_RX_FIFO_EVENT rxFlags;
-		CAN_RX_MSGOBJ rxObj;
-//		struct canfd_frame frame;
-		uint32_t rxif;
-		CAN_MODULE_EVENT eventflags;
-		CAN_ECC_EVENT eccflags;
-		CAN_RXCODE rxCode;
-
-		memset(&frame, 0, sizeof(frame));
-
-		DRV_CANFDSPI_ModuleEventGet(DRV_CANFDSPI_INDEX_0, &eventflags);
-		DRV_CANFDSPI_ReceiveEventGet(DRV_CANFDSPI_INDEX_0, &rxif);
-		DRV_CANFDSPI_ModuleEventRxCodeGet(DRV_CANFDSPI_INDEX_0, &rxCode);
-		// printf("rxif:%d, rxCode:%d\r\n",(int)rxif, (int)rxCode);
-		if ((!rxif) && (!rxCode)) {
-			printf("111eventflags:%d\r\n", eventflags);
-			printf("rxif:%d\r\n",(int)rxif);
-			DRV_CANFDSPI_ModuleEventRxCodeGet(DRV_CANFDSPI_INDEX_0, &rxCode);
-			printf("0000rxCode:%d\r\n", rxCode);
-			CAN_TXCODE txCode;
-			DRV_CANFDSPI_ModuleEventTxCodeGet(DRV_CANFDSPI_INDEX_0, &txCode);
-			printf("0000txCode:%d\r\n", txCode);
-			CAN_FILTER filterHit;
-			DRV_CANFDSPI_ModuleEventFilterHitGet(DRV_CANFDSPI_INDEX_0, &filterHit);
-			printf("0000filterHits:%d\r\n", filterHit);
-			CAN_ICODE icode;
-			DRV_CANFDSPI_ModuleEventIcodeGet(DRV_CANFDSPI_INDEX_0, &icode);
-			printf("0000icode:%d\r\n", icode);
-			CAN_CRC_EVENT crcflags;
-			DRV_CANFDSPI_CrcEventGet(DRV_CANFDSPI_INDEX_0, &crcflags);
-			printf("0000crcflags:%d\r\n", crcflags);
-			CAN_TEF_FIFO_EVENT tefflags;
-			DRV_CANFDSPI_TefEventGet(DRV_CANFDSPI_INDEX_0, &tefflags);
-			printf("0000tefflags:%d\r\n", tefflags);
-			DRV_CANFDSPI_ReceiveChannelEventGet(DRV_CANFDSPI_INDEX_0,CAN_FIFO_CH2, &rxFlags);
-			printf("0000rxFlags:%d\r\n", rxFlags);
-			DRV_CANFDSPI_ModuleEventGet(DRV_CANFDSPI_INDEX_0, &eventflags);
-			printf("2222eventflags:%d\r\n", eventflags);
-			uint32_t rxovif;
-			DRV_CANFDSPI_ReceiveEventOverflowGet(DRV_CANFDSPI_INDEX_0, &rxovif);
-			printf("0000rxovif:%d\r\n", rxovif);
-			uint8_t tec, rec;
-			CAN_ERROR_STATE flags;
-			DRV_CANFDSPI_ErrorCountStateGet(DRV_CANFDSPI_INDEX_0, &tec, &rec, &flags);
-			printf("tec:%d, rec:%d, flags:%d\r\n", tec, rec, flags);
-			CAN_BUS_DIAGNOSTIC bd;
-			DRV_CANFDSPI_BusDiagnosticsGet(DRV_CANFDSPI_INDEX_0, &bd);
-			printf("bd:%d\r\n", bd);
-			DRV_CANFDSPI_ReceiveChannelEventOverflowClear(DRV_CANFDSPI_INDEX_0, CAN_FIFO_CH2);
-			return;
-		}
-
-		int count, start;
-		for (count = 0, start = CAN_FIFO_CH2;
-			count < 1; count++, start++) {
-			if (rxif & BIT(start) || (rxCode == start)) {
-			// 	printf("BIT(start):%d\r\n",(int)BIT(start));
-				// DRV_CANFDSPI_ReceiveChannelEventGet(DRV_CANFDSPI_INDEX_0, start, &rxFlags);
-				// printf("111rxFlags:%d\r\n", rxFlags);
-				// if (rxFlags & CAN_RX_FIFO_NOT_EMPTY_EVENT) {
-					DRV_CANFDSPI_ReceiveMessageGetBulk(DRV_CANFDSPI_INDEX_0, start, &rxObj, &frame.data[0], MAX_DATA_BYTES);
-					if (rxObj.bF.ctrl.IDE) {
-						frame.can_id = (rxObj.bF.id.SID << 18) + rxObj.bF.id.EID;
-						frame.can_id |= CAN_FMT;
-					} else {
-						frame.can_id = rxObj.bF.id.SID;
-					}
-
-					// if (rxObj.bF.ctrl.ESI) {
-					// 	frame.flags |= CAN_ESI_FLAG;
-					// 	frame.can_id |= CAN_ERR;
-					// } else {
-					// 	frame.flags &= ~CAN_ESI_FLAG;
-					// 	frame.can_id &= ~CAN_ERR;
-					// }
-
-					// if (rxObj.bF.ctrl.RTR) {
-					// 	frame.can_id |= CAN_RTR;
-					// } else {
-					// 	frame.can_id &= ~CAN_RTR;
-					// }
-					// printf("\r\n Receive message's IDs = %x, DLC = %d, FLAG = %x\r\n", (unsigned int)frame.can_id, rxObj.bF.ctrl.DLC, frame.flags);
-					frame.d_len = DRV_CANFDSPI_DlcToDataBytes((CAN_DLC)rxObj.bF.ctrl.DLC);
-				// }
-				// DRV_CANFDSPI_ReceiveChannelEventGet(DRV_CANFDSPI_INDEX_0, start, &rxFlags);
-				// printf("222rxFlags:%d\r\n", rxFlags);
-			}
-		}
-		// DRV_CANFDSPI_ModuleEventGet(DRV_CANFDSPI_INDEX_0, &eventflags);
-		// printf("222eventflags:%d\r\n", eventflags);
-		// DRV_CANFDSPI_EccEventGet(DRV_CANFDSPI_INDEX_0, &eccflags);
-		// printf("eccflags:%d\r\n", eccflags);
-		DRV_CANFDSPI_EccEventClear(DRV_CANFDSPI_INDEX_0, CAN_ECC_ALL_EVENTS);
-		DRV_CANFDSPI_ModuleEventClear(DRV_CANFDSPI_INDEX_0, CAN_ALL_EVENTS);
-}
+//void mcp2518fd_transpond(void)
+//{
+//		CAN_RX_FIFO_EVENT rxFlags;
+//		CAN_RX_MSGOBJ rxObj;
+////		struct canfd_frame frame;
+//		uint32_t rxif;
+//		CAN_MODULE_EVENT eventflags;
+//		CAN_ECC_EVENT eccflags;
+//		CAN_RXCODE rxCode;
+//
+//		memset(&frame, 0, sizeof(frame));
+//
+//		DRV_CANFDSPI_ModuleEventGet(DRV_CANFDSPI_INDEX_0, &eventflags);
+//		DRV_CANFDSPI_ReceiveEventGet(DRV_CANFDSPI_INDEX_0, &rxif);
+//		DRV_CANFDSPI_ModuleEventRxCodeGet(DRV_CANFDSPI_INDEX_0, &rxCode);
+//		// printf("rxif:%d, rxCode:%d\r\n",(int)rxif, (int)rxCode);
+//		if ((!rxif) && (!rxCode)) {
+//			printf("111eventflags:%d\r\n", eventflags);
+//			printf("rxif:%d\r\n",(int)rxif);
+//			DRV_CANFDSPI_ModuleEventRxCodeGet(DRV_CANFDSPI_INDEX_0, &rxCode);
+//			printf("0000rxCode:%d\r\n", rxCode);
+//			CAN_TXCODE txCode;
+//			DRV_CANFDSPI_ModuleEventTxCodeGet(DRV_CANFDSPI_INDEX_0, &txCode);
+//			printf("0000txCode:%d\r\n", txCode);
+//			CAN_FILTER filterHit;
+//			DRV_CANFDSPI_ModuleEventFilterHitGet(DRV_CANFDSPI_INDEX_0, &filterHit);
+//			printf("0000filterHits:%d\r\n", filterHit);
+//			CAN_ICODE icode;
+//			DRV_CANFDSPI_ModuleEventIcodeGet(DRV_CANFDSPI_INDEX_0, &icode);
+//			printf("0000icode:%d\r\n", icode);
+//			CAN_CRC_EVENT crcflags;
+//			DRV_CANFDSPI_CrcEventGet(DRV_CANFDSPI_INDEX_0, &crcflags);
+//			printf("0000crcflags:%d\r\n", crcflags);
+//			CAN_TEF_FIFO_EVENT tefflags;
+//			DRV_CANFDSPI_TefEventGet(DRV_CANFDSPI_INDEX_0, &tefflags);
+//			printf("0000tefflags:%d\r\n", tefflags);
+//			DRV_CANFDSPI_ReceiveChannelEventGet(DRV_CANFDSPI_INDEX_0,CAN_FIFO_CH2, &rxFlags);
+//			printf("0000rxFlags:%d\r\n", rxFlags);
+//			DRV_CANFDSPI_ModuleEventGet(DRV_CANFDSPI_INDEX_0, &eventflags);
+//			printf("2222eventflags:%d\r\n", eventflags);
+//			uint32_t rxovif;
+//			DRV_CANFDSPI_ReceiveEventOverflowGet(DRV_CANFDSPI_INDEX_0, &rxovif);
+//			printf("0000rxovif:%d\r\n", rxovif);
+//			uint8_t tec, rec;
+//			CAN_ERROR_STATE flags;
+//			DRV_CANFDSPI_ErrorCountStateGet(DRV_CANFDSPI_INDEX_0, &tec, &rec, &flags);
+//			printf("tec:%d, rec:%d, flags:%d\r\n", tec, rec, flags);
+//			CAN_BUS_DIAGNOSTIC bd;
+//			DRV_CANFDSPI_BusDiagnosticsGet(DRV_CANFDSPI_INDEX_0, &bd);
+//			printf("bd:%d\r\n", bd);
+//			DRV_CANFDSPI_ReceiveChannelEventOverflowClear(DRV_CANFDSPI_INDEX_0, CAN_FIFO_CH2);
+//			return;
+//		}
+//
+//		int count, start;
+//		for (count = 0, start = CAN_FIFO_CH2;
+//			count < 1; count++, start++) {
+//			if (rxif & BIT(start) || (rxCode == start)) {
+//			// 	printf("BIT(start):%d\r\n",(int)BIT(start));
+//				// DRV_CANFDSPI_ReceiveChannelEventGet(DRV_CANFDSPI_INDEX_0, start, &rxFlags);
+//				// printf("111rxFlags:%d\r\n", rxFlags);
+//				// if (rxFlags & CAN_RX_FIFO_NOT_EMPTY_EVENT) {
+//					DRV_CANFDSPI_ReceiveMessageGetBulk(DRV_CANFDSPI_INDEX_0, start, &rxObj, &frame.data[0], MAX_DATA_BYTES);
+//					if (rxObj.bF.ctrl.IDE) {
+//						frame.can_id = (rxObj.bF.id.SID << 18) + rxObj.bF.id.EID;
+//						frame.can_id |= CAN_FMT;
+//					} else {
+//						frame.can_id = rxObj.bF.id.SID;
+//					}
+//
+//					// if (rxObj.bF.ctrl.ESI) {
+//					// 	frame.flags |= CAN_ESI_FLAG;
+//					// 	frame.can_id |= CAN_ERR;
+//					// } else {
+//					// 	frame.flags &= ~CAN_ESI_FLAG;
+//					// 	frame.can_id &= ~CAN_ERR;
+//					// }
+//
+//					// if (rxObj.bF.ctrl.RTR) {
+//					// 	frame.can_id |= CAN_RTR;
+//					// } else {
+//					// 	frame.can_id &= ~CAN_RTR;
+//					// }
+//					// printf("\r\n Receive message's IDs = %x, DLC = %d, FLAG = %x\r\n", (unsigned int)frame.can_id, rxObj.bF.ctrl.DLC, frame.flags);
+//					frame.d_len = DRV_CANFDSPI_DlcToDataBytes((CAN_DLC)rxObj.bF.ctrl.DLC);
+//				// }
+//				// DRV_CANFDSPI_ReceiveChannelEventGet(DRV_CANFDSPI_INDEX_0, start, &rxFlags);
+//				// printf("222rxFlags:%d\r\n", rxFlags);
+//			}
+//		}
+//		// DRV_CANFDSPI_ModuleEventGet(DRV_CANFDSPI_INDEX_0, &eventflags);
+//		// printf("222eventflags:%d\r\n", eventflags);
+//		// DRV_CANFDSPI_EccEventGet(DRV_CANFDSPI_INDEX_0, &eccflags);
+//		// printf("eccflags:%d\r\n", eccflags);
+//		DRV_CANFDSPI_EccEventClear(DRV_CANFDSPI_INDEX_0, CAN_ECC_ALL_EVENTS);
+//		DRV_CANFDSPI_ModuleEventClear(DRV_CANFDSPI_INDEX_0, CAN_ALL_EVENTS);
+//}
 
 CAN_TX_MSGOBJ txObj;
 //CAN_TX_MSGOBJ txObj;
@@ -337,13 +341,24 @@ void mcp2518fd_transmit(void) {
 
 //    while(ext5_cnt == 0);
 
-    DRV_CANFDSPI_TransmitChannelEventGet(DRV_CANFDSPI_INDEX_0, APP_TX_FIFO, &txFlags);
+//    DRV_CANFDSPI_TransmitChannelEventGet(DRV_CANFDSPI_INDEX_0, APP_TX_FIFO, &txFlags);
 
     //waiting for checking transmit buffer with timeout = TRANSMIT_TIMEOUT
-    transmitTimeout_Flag = 0;
-    while ( (!(txFlags & CAN_TX_FIFO_NOT_FULL_EVENT)) && (transmitTimeout_Flag == 0) ) {
-    }
+    //reset timeout counter
+//    transmitTimeout_Flag = 0;
+    /*for testing timeout*/
+//    txFlags = CAN_TX_FIFO_NO_EVENT;
+    do {
+    	DRV_CANFDSPI_TransmitChannelEventGet(DRV_CANFDSPI_INDEX_0, APP_TX_FIFO, &txFlags);
+    	transmitTimeout_Flag = 0;
+//    } while ( !(txFlags & CAN_TX_FIFO_NOT_FULL_EVENT) );
+    } while ( (!(txFlags & CAN_TX_FIFO_NOT_FULL_EVENT)) && (transmitTimeout_Flag == 0) );
+    //stop counter
+    transmitTimeout_Flag = 1;
+    //reset counter
+    transmitTimeout_Cnt = 0;
 
+//    transmitTimeout_Flag = 2;
 
 	DRV_CANFDSPI_TransmitChannelLoad(DRV_CANFDSPI_INDEX_0, APP_TX_FIFO, &txObj, txd, n, flush);
 //	printf("\r\n Transmit message's ID = %04x, and txd[0] = %02x", txObj.bF.id.SID, txd[0]);

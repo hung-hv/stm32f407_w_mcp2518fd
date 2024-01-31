@@ -33,18 +33,18 @@ extern "C" {
 
 //struct canfd_frame frame;
 
-const uint32_t TRANSMIT_TIMEOUT = 500*TIMER_FACTOR; //ms
-uint8_t transmitTimeout_Flag = 0;
-uint16_t transmitTimeout_Cnt = 0;
+extern const uint32_t TRANSMIT_TIMEOUT; //ms
+extern uint8_t transmitTimeout_Flag;
+extern uint32_t transmitTimeout_Cnt;
 
 //! SPI Initialization
 void CANFDSPI_Init(void);
-void DRV_SPI_Initialize(void);
+//void DRV_SPI_Initialize(void);
 
 //! SPI Read/Write Transfer
 
 int8_t DRV_SPI_TransferData(uint8_t spiSlaveDeviceIndex, uint8_t *SpiTxData, uint8_t *SpiRxData, uint16_t XferSize);
-int8_t DRV_SPI_2_TransferData(uint8_t spiSlaveDeviceIndex, uint8_t *SpiTxData, uint8_t *SpiRxData, uint16_t spiTransferSize);
+//int8_t DRV_SPI_2_TransferData(uint8_t spiSlaveDeviceIndex, uint8_t *SpiTxData, uint8_t *SpiRxData, uint16_t spiTransferSize);
 
 //! SPI Chip Select assert/de-assert
 

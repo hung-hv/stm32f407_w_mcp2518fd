@@ -304,7 +304,7 @@ void TIM8_TRG_COM_TIM14_IRQHandler(void)
   /* USER CODE END TIM8_TRG_COM_TIM14_IRQn 0 */
   HAL_TIM_IRQHandler(&htim14);
   /* USER CODE BEGIN TIM8_TRG_COM_TIM14_IRQn 1 */
-	if(counter_timer >= 1000000) {
+	if(counter_timer >= 100000) {
 	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);
 	  counter_timer = 0;
 	}
